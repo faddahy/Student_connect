@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #fff1f3;
+  --color-brand-100: #ffe0e6;
+  --color-brand-200: #ffc6d2;
+  --color-brand-400: #fb6f8f;
+  --color-brand-500: #f43f6b;
+  --color-brand-600: #e11d55;
+  --color-brand-700: #be1247;
+  --color-ink: #1f1235;
+  }
+
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body {
+  background: #fff7f9;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+@utility btn-primary {
+  @apply btn bg-gradient-to-r from-brand-500 to-fuchsia-500 text-white shadow-lg shadow-brand-500/25 hover:brightness-105;
+}
+@utility btn-ghost {
+  @apply btn bg-white text-ink ring-1 ring-black/10 hover:bg-black/5;
+}
+@utility input {
+  @apply w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-base outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-semibold text-ink/80;
+}
+@utility card {
+  @apply rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5;
+}
+@utility chip {
+  @apply rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-black/10 transition;
+}
+@utility chip-on {
+  @apply bg-brand-500 text-white ring-brand-500;
+}
+.prose-legal h2 {
+  @apply mt-8 mb-2 text-lg font-bold;
+}
+.prose-legal p,
+.prose-legal li {
+  @apply text-[15px] leading-relaxed text-ink/80;
+}
+.prose-legal ul {
+  @apply list-disc space-y-1 pl-5;
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
