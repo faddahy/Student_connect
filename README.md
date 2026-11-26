@@ -1,9 +1,10 @@
-# Student Connect 💘
+# Faddahy Social
 
-A free, mobile-first dating & friendship web app for students of the **Federal University of Technology, Minna (FUT Minna)**, Niger State, Nigeria.
+A text-first social app upgraded from Student Connect. It stays free to host on **Vercel Hobby** and **Supabase Free**. If the Supabase env vars are missing, the app runs in a local demo with seeded people, posts, games, and admin queues.
 
-- Sign-up is limited to FUT Minna **student emails** (`@st.futminna.edu.ng`), enforced in the database.
-- **18+ only** (date of birth checked in the browser *and* by a database trigger).
+- Sign-up is open to **any email**, including Gmail. The old FUTMinna domain gate is removed in `supabase/migrations/20261126120000_faddahy_social.sql`.
+- Every new profile **follows @yagyok** from a database trigger. The demo seed does the same.
+- **18+ only** (date of birth checked in the browser and by a database trigger).
 - Profiles with up to 4 compressed photos, bio, department, level, gender, who you're interested in, interests.
 - Swipe-style **Discover** feed (like / pass) filtered by mutual preferences. Mutual like = **match**.
 - **Real-time chat** between matches only.
@@ -18,13 +19,19 @@ Runs entirely on free tiers: **Vercel Hobby** (hosting) + **Supabase Free** (aut
 
 ---
 
-## How sign-up restriction works
+## Demo mode
+
+Leave `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` empty and run `npm run dev`. The feed, dating hold, Whot, Ludo, anonymous inbox, Secret Zone, and founder admin all render from `src/lib/demo/data.ts`. Switch the signed-in sample with the header chips or `/api/demo/persona?as=tunde&next=/anonymous`.
+
+`ada` is a blue-tick member with a live 48-hour dating hold. `tunde` is a free member (anonymous notes lock 2 of every 3). `@yagyok` is the founder admin.
+
+## How sign-up works
 
 | Layer | Where | What it does |
 | --- | --- | --- |
-| UI + server action | `NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS` env var | Friendly error before calling Supabase |
-| **Database (authoritative)** | `public.allowed_email_domains` table + `enforce_email_domain` trigger on `auth.users` | Rejects any sign-up (or email change) from other domains, even via the raw API |
-| Optional auth hook | `public.hook_before_user_created` | Same check as a Supabase "Before User Created" hook, with a clean 403 |
+| UI + server action | `isAllowedEmail()` | Accepts any address shaped like an email |
+| **Database** | `enforce_email_domain` | Rejects only a missing `@`. Campus domains are no longer required |
+| New profile | `auto_follow_founder` | Inserts a follow of the profile whose username is `yagyok` |
 
 The FUT Minna student domain was verified from the university's own ePortal, which issues every student an address like `firstname.lastname@st.futminna.edu.ng` (Google Workspace / Gmail). Staff use `@futminna.edu.ng`, which is **not** allowed by default because this is a students-only app.
 

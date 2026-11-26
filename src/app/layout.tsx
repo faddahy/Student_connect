@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { ADSENSE_CLIENT, APP_NAME, APP_TAGLINE, SITE_URL } from "@/lib/config";
 import { RegisterSW } from "@/components/RegisterSW";
+import { NetworkAds } from "@/components/NetworkAds";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${APP_NAME} — FUT Minna`, template: `%s · ${APP_NAME}` },
+  title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description: APP_TAGLINE,
   applicationName: APP_NAME,
-  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "black-translucent" },
   icons: {
     icon: [{ url: "/icons/192", type: "image/png", sizes: "192x192" }],
     apple: [{ url: "/icons/180", sizes: "180x180" }],
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f43f6b",
+  themeColor: "#0b1220",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -34,15 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${jakarta.variable} font-sans antialiased`}>
         {children}
         <RegisterSW />
-        {ADSENSE_CLIENT && (
-          <Script
-            id="adsense"
-            async
-            strategy="afterInteractive"
-            crossOrigin="anonymous"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-          />
-        )}
+        <NetworkAds />
       </body>
     </html>
   );

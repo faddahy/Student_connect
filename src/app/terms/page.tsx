@@ -10,7 +10,7 @@ export default function Terms() {
       <h2>1. Eligibility</h2>
       <ul>
         <li>You must be at least 18 years old.</li>
-        <li>You must be a current student of the Federal University of Technology, Minna with a valid university-issued email address.</li>
+        <li>You must be 18 or older and sign up with an email address you control. Any provider, including Gmail, is accepted.</li>
         <li>You must not have been previously banned from the Service.</li>
       </ul>
       <h2>2. Your account</h2>
@@ -28,7 +28,7 @@ export default function Terms() {
       <h2>8. No warranty and limitation of liability</h2>
       <p>The Service is provided &ldquo;as is&rdquo; without warranties of any kind. To the maximum extent permitted by law, {APP_NAME} is not liable for any indirect or consequential loss, or for the conduct of any member.</p>
       <h2>9. Independence</h2>
-      <p>{APP_NAME} is an independent student project and is not affiliated with, endorsed by or operated by the Federal University of Technology, Minna.</p>
+      <p>{APP_NAME} is an independent product. It is not affiliated with any university.</p>
       <h2>10. Changes and governing law</h2>
       <p>We may update these Terms and will post the new version here. These Terms are governed by the laws of the Federal Republic of Nigeria.</p>
       {CONTACT_EMAIL && (<><h2>Contact</h2><p><a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p></>)}

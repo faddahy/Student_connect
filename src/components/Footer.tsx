@@ -10,7 +10,7 @@ export function Footer() {
         <Link href="/terms">Terms of Use</Link>
         <Link href="/privacy">Privacy Policy</Link>
       </nav>
-      <p className="mt-4">© {new Date().getFullYear()} {APP_NAME}. An independent student project, not affiliated with FUT Minna.</p>
+      <p className="mt-4">© {new Date().getFullYear()} {APP_NAME}. Text-first, and independent of any campus.</p>
     </footer>
   );
 }

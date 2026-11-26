@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function OnboardingPage() {
   const { profile } = await requireUser();
   if (!profile) redirect("/login");
-  if (profile.onboarded) redirect("/discover");
+  if (profile.onboarded) redirect("/feed");
   return (
     <main className="mx-auto max-w-md px-5 py-8">
       <Logo />

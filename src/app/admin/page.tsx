@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
-import { photoUrl, REPORT_REASONS } from "@/lib/config";
+import { isSupabaseConfigured, photoUrl, REPORT_REASONS } from "@/lib/config";
+import { AdminConsole } from "@/components/social/AdminConsole";
 import { banUser, setReportStatus, unbanUser } from "./actions";
 
 export const metadata = { title: "Admin", robots: { index: false } };
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 type P = { id: string; email: string; display_name: string | null; photos: string[]; is_banned: boolean; bio: string | null };
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  if (!isSupabaseConfigured()) return <AdminConsole />;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !isAdminEmail(user.email)) notFound();

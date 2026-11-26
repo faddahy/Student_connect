@@ -4,20 +4,18 @@ import { useActionState } from "react";
 import { signUp, type FormState } from "../actions";
 import { AuthShell } from "@/components/AuthShell";
 import { FormStatus } from "@/components/FormStatus";
-import { ALLOWED_EMAIL_DOMAINS } from "@/lib/config";
-
 export default function SignUpPage() {
   const [state, action, pending] = useActionState<FormState, FormData>(signUp, {});
   return (
-    <AuthShell title="Create your account" subtitle="Only verified FUT Minna students. 18+ only.">
+    <AuthShell title="Create your account" subtitle="Any Gmail or email. 18+ only. New members follow @yagyok automatically.">
       {state.message ? (
         <FormStatus message={state.message} />
       ) : (
         <form action={action} className="space-y-4">
           <div>
-            <label className="label" htmlFor="email">Student email</label>
+            <label className="label" htmlFor="email">Email</label>
             <input id="email" name="email" type="email" required autoComplete="email" className="input"
-              placeholder={`yourname@${ALLOWED_EMAIL_DOMAINS[0]}`} />
+              placeholder="you@gmail.com" />
           </div>
           <div>
             <label className="label" htmlFor="password">Password</label>
