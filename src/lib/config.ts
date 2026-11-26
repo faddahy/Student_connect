@@ -1,19 +1,22 @@
-export const APP_NAME = "Student Connect";
-export const APP_TAGLINE = "Meet FUT Minna students. Verified with your school email.";
+export const APP_NAME = "Faddahy Social";
+export const APP_TAGLINE = "Text-first social for any email. Free to host, verified when it counts.";
 export const SCHOOL_NAME = "Federal University of Technology, Minna";
+export const FOUNDER_USERNAME = "yagyok";
 
-/** Comma-separated list of allowed email domains (UI + app-server check).
- * The database table `allowed_email_domains` is the authoritative check. */
+/** Sign-up is open to any real email address. The old campus-domain list is unused. */
 export const ALLOWED_EMAIL_DOMAINS = (
-  process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS || "st.futminna.edu.ng"
+  process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS || ""
 )
   .split(",")
   .map((d) => d.trim().toLowerCase().replace(/^@/, ""))
   .filter(Boolean);
 
 export function isAllowedEmail(email: string): boolean {
-  const domain = email.trim().toLowerCase().split("@")[1] ?? "";
-  return ALLOWED_EMAIL_DOMAINS.includes(domain);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim().toLowerCase());
+}
+
+export function isSupabaseConfigured(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
 export const SITE_URL = (
@@ -30,13 +33,15 @@ export const AD_EVERY_N_CARDS = Math.max(
   2,
   parseInt(process.env.NEXT_PUBLIC_AD_EVERY_N_CARDS || "6", 10) || 6,
 );
+export const AD_EVERY_N_POSTS = 10;
+export const AD_EVERY_N_COMMENTS = 10;
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 export function photoUrl(path: string): string {
   if (!path) return "";
-  if (path.startsWith("http")) return path;
+  if (path.startsWith("http") || path.startsWith("data:")) return path;
   return `${SUPABASE_URL}/storage/v1/object/public/photos/${path}`;
 }
 

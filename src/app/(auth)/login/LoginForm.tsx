@@ -11,7 +11,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
       <input type="hidden" name="next" value={next} />
       {notice && <FormStatus error={notice} />}
       <div>
-        <label className="label" htmlFor="email">Student email</label>
+        <label className="label" htmlFor="email">Email</label>
         <input id="email" name="email" type="email" required autoComplete="email" className="input" />
       </div>
       <div>

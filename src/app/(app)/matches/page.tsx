@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
 import { ADSENSE_SLOT_MATCHES, photoUrl } from "@/lib/config";
+import { avatarUri, personByUsername } from "@/lib/demo/data";
 import type { MatchRow } from "@/lib/types";
 import { AdSlot } from "@/components/AdSlot";
 
@@ -15,9 +16,30 @@ function timeAgo(iso: string) {
 }
 
 export default async function MatchesPage() {
-  const { supabase, user } = await requireUser();
-  const { data } = await supabase.rpc("get_matches");
-  const matches = (data as MatchRow[]) ?? [];
+  const session = await requireUser();
+  const user = session.user;
+  let matches: MatchRow[] = [];
+  if (session.demo) {
+    const chika = personByUsername("chika")!;
+    matches = [{
+      match_id: "demo-chika",
+      matched_at: new Date().toISOString(),
+      user_id: chika.id,
+      display_name: chika.displayName,
+      age: chika.age,
+      department: chika.department,
+      level: chika.level,
+      bio: chika.bio,
+      interests: chika.interests,
+      photos: [avatarUri(chika.displayName, chika.color)],
+      last_message: "Hold is on. Confirm when you are both sure.",
+      last_message_at: new Date().toISOString(),
+      last_sender: chika.id,
+    }];
+  } else if (session.supabase) {
+    const { data } = await session.supabase.rpc("get_matches");
+    matches = (data as MatchRow[]) ?? [];
+  }
   const fresh = matches.filter((m) => !m.last_message);
   const convos = matches.filter((m) => m.last_message);
 

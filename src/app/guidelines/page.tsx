@@ -10,7 +10,7 @@ export default function Guidelines() {
       <h2>Be real</h2>
       <ul>
         <li>Use your own recent photos. No celebrities, cartoons or other people.</li>
-        <li>You must be 18 or older and a current FUT Minna student.</li>
+        <li>You must be 18 or older. Any email address may register.</li>
         <li>One account per person. Don&apos;t impersonate anyone.</li>
       </ul>
       <h2>Be respectful</h2>

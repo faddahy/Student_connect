@@ -14,6 +14,15 @@ export interface MyProfile {
   photos: string[];
   onboarded: boolean;
   is_banned: boolean;
+  username?: string | null;
+  region?: "nigeria" | "africa" | "foreign" | null;
+  blue_tick?: boolean;
+  kyc_status?: string | null;
+  premium_plan?: string | null;
+  straight_premium_months?: number;
+  straight_active_days?: number;
+  earnings_ngn?: number;
+  held_ngn?: number;
 }
 
 export interface FeedProfile {

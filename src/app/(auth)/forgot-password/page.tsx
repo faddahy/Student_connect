@@ -9,7 +9,7 @@ export default function ForgotPage() {
   return (
     <AuthShell title="Reset password" subtitle="We'll email you a reset link.">
       <form action={action} className="space-y-4">
-        <input name="email" type="email" required className="input" placeholder="Student email" />
+        <input name="email" type="email" required className="input" placeholder="you@gmail.com" />
         <FormStatus error={state.error} message={state.message} />
         <button className="btn-primary w-full" disabled={pending}>Send reset link</button>
       </form>

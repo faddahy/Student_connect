@@ -7,14 +7,15 @@ import { photoUrl } from "@/lib/config";
 import type { MatchRow, Message } from "@/lib/types";
 import { SafetyMenu } from "@/components/SafetyMenu";
 
-export function ChatRoom({ match, myId, initial }: { match: MatchRow; myId: string; initial: Message[] }) {
-  const supabase = useRef(createClient()).current;
+export function ChatRoom({ match, myId, initial, demo = false }: { match: MatchRow; myId: string; initial: Message[]; demo?: boolean }) {
+  const supabase = useRef(demo ? null : createClient()).current;
   const [messages, setMessages] = useState<Message[]>(initial);
   const [text, setText] = useState("");
   const [error, setError] = useState<string>();
   const bottom = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!supabase) return;
     const channel = supabase
       .channel(`match:${match.match_id}`)
       .on(
@@ -37,6 +38,10 @@ export function ChatRoom({ match, myId, initial }: { match: MatchRow; myId: stri
     if (!body) return;
     setText("");
     setError(undefined);
+    if (!supabase) {
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), match_id: match.match_id, sender: myId, body, created_at: new Date().toISOString() }]);
+      return;
+    }
     const { data, error: err } = await supabase
       .from("messages")
       .insert({ match_id: match.match_id, sender: myId, body })
@@ -47,8 +52,8 @@ export function ChatRoom({ match, myId, initial }: { match: MatchRow; myId: stri
   }
 
   return (
-    <main className="fixed inset-0 z-40 mx-auto flex max-w-md flex-col bg-[#fff7f9]">
-      <header className="flex items-center gap-3 border-b border-black/5 bg-white px-3 py-2.5">
+    <main className="fixed inset-0 z-40 mx-auto flex max-w-lg flex-col bg-navy">
+      <header className="flex items-center gap-3 border-b border-white/10 bg-surface px-3 py-2.5">
         <Link href="/matches" className="grid h-9 w-9 place-items-center rounded-full text-xl" aria-label="Back">‹</Link>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photoUrl(match.photos[0])} alt="" className="h-10 w-10 rounded-full object-cover" />
@@ -70,7 +75,7 @@ export function ChatRoom({ match, myId, initial }: { match: MatchRow; myId: stri
           const mine = m.sender === myId;
           return (
             <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <p className={`max-w-[78%] whitespace-pre-wrap break-words rounded-3xl px-4 py-2 text-[15px] ${mine ? "rounded-br-md bg-gradient-to-br from-brand-500 to-fuchsia-500 text-white" : "rounded-bl-md bg-white ring-1 ring-black/5"}`}>
+              <p className={`max-w-[78%] whitespace-pre-wrap break-words rounded-3xl px-4 py-2 text-[15px] ${mine ? "rounded-br-md bg-brand-500 text-white" : "rounded-bl-md bg-surface ring-1 ring-white/10"}`}>
                 {m.body}
               </p>
             </div>
@@ -80,7 +85,7 @@ export function ChatRoom({ match, myId, initial }: { match: MatchRow; myId: stri
       </div>
 
       {error && <p className="px-4 pb-1 text-center text-xs text-red-600">{error}</p>}
-      <form onSubmit={send} className="flex gap-2 border-t border-black/5 bg-white p-3 pb-safe">
+      <form onSubmit={send} className="flex gap-2 border-t border-white/10 bg-surface p-3 pb-safe">
         <input className="input flex-1 py-2.5" placeholder="Type a message…" maxLength={2000} value={text} onChange={(e) => setText(e.target.value)} />
         <button className="btn-primary px-5 py-2.5" disabled={!text.trim()}>Send</button>
       </form>

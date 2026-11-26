@@ -2,41 +2,41 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { Footer } from "@/components/Footer";
-import { ALLOWED_EMAIL_DOMAINS, APP_NAME, SUPABASE_URL } from "@/lib/config";
+import { APP_NAME, isSupabaseConfigured } from "@/lib/config";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
-  if (SUPABASE_URL) {
+  if (isSupabaseConfigured()) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) redirect("/discover");
+    if (user) redirect("/feed");
   }
   const features = [
-    { e: "🎓", t: "Students only", d: `Every account is verified with an @${ALLOWED_EMAIL_DOMAINS[0]} email. No randoms, no outsiders.` },
-    { e: "💘", t: "Mutual matches", d: "Swipe right on people you like. You can only chat when the feeling is mutual." },
-    { e: "💬", t: "Real-time chat", d: "Instant messages with your matches, right in your browser. No app store needed." },
-    { e: "🛡️", t: "Safety first", d: "18+ only. Report, block or unmatch anyone in one tap. Reports are reviewed by real people." },
+    { e: "✎", t: "Text-first feed", d: "Original posts, read-only distributes, and quotes that cannot be quoted again." },
+    { e: "✓", t: "Open sign-up", d: "Any Gmail or email can join. Every new account follows @yagyok." },
+    { e: "₦", t: "Blue tick by transfer", d: "Regional prices, a manual receipt, and earning clocks the founder approves." },
+    { e: "♠", t: "Whot and Ludo", d: "Free tables or paid tables with a 1% fee, 30% to the host, 70% to the winner." },
   ];
   return (
     <main className="mx-auto max-w-md px-5 py-6 sm:max-w-2xl">
       <header className="flex items-center justify-between">
         <Logo />
-        <Link href="/login" className="font-semibold text-brand-600">Log in</Link>
+        <Link href="/login" className="font-semibold text-brand-200">Log in</Link>
       </header>
 
       <section className="mt-14 text-center">
-        <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-700">For FUT Minna students · Gidan Kwano & Bosso</span>
+        <span className="inline-block rounded-full bg-brand-500/15 px-3 py-1 text-xs font-bold text-brand-100">Free to host · Vercel + Supabase</span>
         <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl">
-          Find your person <span className="bg-gradient-to-r from-brand-500 to-fuchsia-500 bg-clip-text text-transparent">on campus</span>.
+          A social app that stays <span className="text-brand-200">text-first</span>.
         </h1>
         <p className="mx-auto mt-4 max-w-sm text-lg text-ink/60">
-          {APP_NAME} is the dating and friendship app made just for FUT Minna students. Free, verified, and safe.
+          {APP_NAME} keeps the main feed in words so it can live on free hosting. Dating, games, and the Secret Zone sit in their own rooms.
         </p>
         <div className="mx-auto mt-8 flex max-w-xs flex-col gap-3">
-          <Link href="/signup" className="btn-primary text-lg">Join with your student email</Link>
-          <Link href="/login" className="btn-ghost">I already have an account</Link>
+          <Link href="/feed" className="btn-primary text-lg">Open the demo feed</Link>
+          <Link href="/signup" className="btn-ghost">Create an account</Link>
         </div>
-        <p className="mt-3 text-xs text-ink/40">18+ only · 100% free</p>
+        <p className="mt-3 text-xs text-ink/40">18+ · Any email · You will follow @yagyok</p>
       </section>
 
       <section className="mt-16 grid gap-4 sm:grid-cols-2">
@@ -52,9 +52,9 @@ export default async function Home() {
       <section className="card mt-10">
         <h2 className="text-lg font-bold">How it works</h2>
         <ol className="mt-3 space-y-2 text-ink/70">
-          <li>1. Sign up with your school email and confirm it.</li>
-          <li>2. Add a few photos, your department and level, and what you&apos;re into.</li>
-          <li>3. Like or pass on students. Match when it&apos;s mutual, then chat.</li>
+          <li>1. Sign up with any email. The database follows @yagyok for you.</li>
+          <li>2. Capture a live selfie and ID, then send a bank receipt for the blue tick.</li>
+          <li>3. Read the feed, play Whot or Ludo, and keep video out of the main timeline.</li>
         </ol>
         <p className="mt-4 text-sm text-ink/50">Tip: add {APP_NAME} to your home screen from your browser menu for an app-like experience.</p>
       </section>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
-import { DEPARTMENTS, GENDERS, INTERESTS, LEVELS, photoUrl } from "@/lib/config";
+import { DEPARTMENTS, GENDERS, INTERESTS, LEVELS, isSupabaseConfigured, photoUrl } from "@/lib/config";
 import type { Gender, MyProfile } from "@/lib/types";
 import { FormStatus } from "@/components/FormStatus";
 
@@ -25,7 +25,7 @@ function ageFrom(dob: string): number {
 }
 
 export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "onboarding" | "edit" }) {
-  const supabase = createClient();
+  const live = isSupabaseConfigured();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +60,11 @@ export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "on
           useWebWorker: true,
           fileType: "image/webp",
         });
+        if (!live) {
+          added.push(URL.createObjectURL(compressed));
+          continue;
+        }
+        const supabase = createClient();
         const path = `${profile.id}/${crypto.randomUUID()}.webp`;
         const { error: upErr } = await supabase.storage.from("photos").upload(path, compressed, {
           contentType: "image/webp",
@@ -70,7 +75,7 @@ export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "on
       }
       const next = [...photos, ...added];
       setPhotos(next);
-      if (mode === "edit") await supabase.from("profiles").update({ photos: next }).eq("id", profile.id);
+      if (mode === "edit" && live) await createClient().from("profiles").update({ photos: next }).eq("id", profile.id);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
     } finally {
@@ -86,6 +91,8 @@ export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "on
     }
     const next = photos.filter((p) => p !== path);
     setPhotos(next);
+    if (!live) return;
+    const supabase = createClient();
     await supabase.from("profiles").update({ photos: next }).eq("id", profile.id);
     await supabase.storage.from("photos").remove([path]);
   }
@@ -105,12 +112,18 @@ export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "on
     setMessage(undefined);
     if (displayName.trim().length < 2) return setError("Enter your first name or nickname.");
     if (!dob) return setError("Enter your date of birth.");
-    if (ageFrom(dob) < 18) return setError("Sorry, you must be 18 or older to use Student Connect.");
+    if (ageFrom(dob) < 18) return setError("You must be 18 or older.");
     if (!gender) return setError("Select your gender.");
     if (!interestedIn.length) return setError("Select who you're interested in.");
     if (!photos.length) return setError("Add at least one clear photo of yourself.");
 
+    if (!live) {
+      setMessage(mode === "onboarding" ? "Profile saved in demo mode. You already follow @yagyok." : "Profile saved in demo mode.");
+      if (mode === "onboarding") router.push("/kyc");
+      return;
+    }
     setSaving(true);
+    const supabase = createClient();
     const { error: err } = await supabase
       .from("profiles")
       .update({
@@ -129,7 +142,7 @@ export function ProfileEditor({ profile, mode }: { profile: MyProfile; mode: "on
     setSaving(false);
     if (err) return setError(err.message);
     if (mode === "onboarding") {
-      router.push("/discover");
+      router.push("/feed");
       router.refresh();
     } else {
       setMessage("Profile saved.");
