@@ -1,6 +1,6 @@
-# Faddahy Social
+# D'Luck
 
-A text-first social app upgraded from Student Connect. It stays free to host on **Vercel Hobby** and **Supabase Free**. If the Supabase env vars are missing, the app runs in a local demo with seeded people, posts, games, and admin queues.
+D'Luck is a text-first social app. It stays free to host on **Vercel Hobby** and **Supabase Free**. If the Supabase env vars are missing, the app runs in a local demo with seeded people, posts, games, and admin queues.
 
 - Sign-up is open to **any email**, including Gmail. The old FUTMinna domain gate is removed in `supabase/migrations/20261126120000_faddahy_social.sql`.
 - Every new profile **follows @yagyok** from a database trigger. The demo seed does the same.
@@ -67,9 +67,9 @@ Supabase's built-in email only delivers to your own Supabase team members and on
 
 **Option A — Gmail (easiest, no domain needed, ~500 emails/day):**
 1. On the Gmail account you'll send from, turn on **2-Step Verification** (myaccount.google.com → Security).
-2. Create an **App password** (myaccount.google.com/apppasswords) → name it "Student Connect" → copy the 16-character password.
+2. Create an **App password** (myaccount.google.com/apppasswords) → name it "D'Luck" → copy the 16-character password.
 3. Supabase → **Authentication → Emails → SMTP Settings** → **Enable custom SMTP**:
-   - Sender email: your Gmail address · Sender name: `Student Connect`
+   - Sender email: your Gmail address · Sender name: `D'Luck`
    - Host `smtp.gmail.com` · Port `587` · Username: your Gmail address · Password: the app password
 4. **Authentication → Rate Limits** → raise *emails sent per hour* (e.g. 100).
 
@@ -85,7 +85,7 @@ Supabase → **Authentication**:
      - `https://YOUR-VERCEL-URL/auth/callback` (add after step 6)
      - `https://YOUR-CUSTOM-DOMAIN/auth/callback` (if/when you add one)
 3. *(Optional, nicer error message)* **Authentication → Hooks → Before User Created** → type *Postgres*, schema `public`, function `hook_before_user_created` → enable.
-4. *(Optional)* **Emails → Templates → Confirm signup**: change the subject to "Confirm your Student Connect account".
+4. *(Optional)* **Emails → Templates → Confirm signup**: change the subject to "Confirm your D'Luck account".
 
 ### 5. Copy your API keys
 Supabase → **Project Settings → API** (or **API Keys**):
@@ -190,4 +190,4 @@ public/sw.js           minimal service worker (PWA + offline page)
 - Images are served directly from Supabase Storage (no Vercel image optimisation) to stay within free limits.
 
 ## Disclaimer
-Student Connect is an independent student project and is not affiliated with or endorsed by the Federal University of Technology, Minna.
+D'Luck is an independent project and is not affiliated with or endorsed by the Federal University of Technology, Minna.

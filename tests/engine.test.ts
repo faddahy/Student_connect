@@ -38,6 +38,17 @@ import {
   viewerSurfaceBudgets,
   watWindow,
   WITHDRAWAL_MIN_USD,
+  canCreateAnonymousGroup,
+  canEnterSecretZone,
+  canViewSecretCreator,
+  commentTier,
+  distributeBlockedByDislike,
+  netDelta,
+  netScore,
+  regionalWithdrawalMinimum,
+  sortComments,
+  toggleReaction,
+  withdrawalRequestAllowed,
 } from "../src/lib/engine";
 
 describe("leaf scoring", () => {
@@ -375,6 +386,61 @@ describe("paid play and secret zone splits", () => {
     expect(allowsThirdPartyAds("/secret/zara")).toBe(false);
     expect(allowsThirdPartyAds("/secret/zara?x=1")).toBe(false);
     expect(allowsThirdPartyAds("/feed")).toBe(true);
+  });
+});
+
+describe("mvp v2 reactions, comments, access, and withdrawals", () => {
+  it("keeps a single net score for like and dislike", () => {
+    expect(toggleReaction(null, "like")).toBe("like");
+    expect(toggleReaction("like", "like")).toBeNull();
+    expect(toggleReaction("like", "dislike")).toBe("dislike");
+    expect(netDelta(null, "like")).toBe(1);
+    expect(netDelta("like", "dislike")).toBe(-2);
+    expect(netDelta("dislike", null)).toBe(1);
+    expect(netScore(4, 1)).toBe(3);
+    expect(distributeBlockedByDislike(true)).toBe(true);
+    expect(distributeBlockedByDislike(false)).toBe(false);
+  });
+
+  it("sorts owner reactions by premium, then likes, then replies", () => {
+    const ranked = sortComments([
+      { id: "regular-many", premium: true, ownerReaction: null, likes: 9, replies: 4 },
+      { id: "liked-free", premium: false, ownerReaction: "like" as const, likes: 1, replies: 0 },
+      { id: "liked-premium-replies", premium: true, ownerReaction: "like" as const, likes: 2, replies: 5 },
+      { id: "liked-premium-likes", premium: true, ownerReaction: "like" as const, likes: 4, replies: 0 },
+      { id: "disliked-free", premium: false, ownerReaction: "dislike" as const, likes: 8, replies: 3 },
+      { id: "disliked-premium", premium: true, ownerReaction: "dislike" as const, likes: 0, replies: 0 },
+    ]);
+    expect(ranked.map((comment) => comment.id)).toEqual([
+      "liked-premium-likes",
+      "liked-premium-replies",
+      "liked-free",
+      "regular-many",
+      "disliked-premium",
+      "disliked-free",
+    ]);
+    expect(commentTier({ premium: false, ownerReaction: "dislike" })).toBe(4);
+  });
+
+  it("gates anonymous groups and the 18+ zone", () => {
+    expect(canCreateAnonymousGroup(false)).toBe(false);
+    expect(canCreateAnonymousGroup(true)).toBe(true);
+    expect(canEnterSecretZone(false)).toBe(false);
+    expect(canViewSecretCreator({ viewerIsPremium: true, isOwnChannel: false, subscribed: false })).toBe(false);
+    expect(canViewSecretCreator({ viewerIsPremium: true, isOwnChannel: false, subscribed: true })).toBe(true);
+    expect(canViewSecretCreator({ viewerIsPremium: true, isOwnChannel: true, subscribed: false })).toBe(true);
+    expect(canViewSecretCreator({ viewerIsPremium: false, isOwnChannel: true, subscribed: true })).toBe(false);
+  });
+
+  it("uses the updated regional withdrawal floors", () => {
+    expect(regionalWithdrawalMinimum("nigeria")).toMatchObject({ amount: 30000, currency: "NGN" });
+    expect(regionalWithdrawalMinimum("africa")).toMatchObject({ amount: 50000, currency: "NGN" });
+    expect(regionalWithdrawalMinimum("foreign")).toMatchObject({ amount: 50, currency: "USD" });
+    expect(withdrawalRequestAllowed("nigeria", 29999).ok).toBe(false);
+    expect(withdrawalRequestAllowed("nigeria", 30000).ok).toBe(true);
+    expect(withdrawalRequestAllowed("africa", 50000).reason).toMatch(/admin/i);
+    expect(withdrawalRequestAllowed("foreign", 49).ok).toBe(false);
+    expect(WITHDRAWAL_MIN_USD).toBe(30);
   });
 });
 

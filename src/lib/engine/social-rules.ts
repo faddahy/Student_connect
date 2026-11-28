@@ -128,6 +128,35 @@ export function canSendAnonymous(blueTick: boolean): boolean {
   return blueTick;
 }
 
+/** Anonymous groups are public to join, and only premium members may create one. */
+export function canCreateAnonymousGroup(blueTick: boolean): boolean {
+  return blueTick;
+}
+
+/** The 18+ tab itself requires an active premium (blue-tick) account. */
+export function canEnterSecretZone(blueTick: boolean): boolean {
+  return blueTick;
+}
+
+/**
+ * A premium member still pays ₦1,000/month to watch one creator.
+ * The creator can open their own channel without subscribing to themselves.
+ */
+export function canViewSecretCreator(input: {
+  viewerIsPremium: boolean;
+  isOwnChannel: boolean;
+  subscribed: boolean;
+}): boolean {
+  if (!input.viewerIsPremium) return false;
+  if (input.isOwnChannel) return true;
+  return input.subscribed;
+}
+
+/** A viewer's dislike blocks them from distributing that post. */
+export function distributeBlockedByDislike(dislikedByViewer: boolean): boolean {
+  return dislikedByViewer;
+}
+
 /**
  * Third-party ad scripts are forbidden on every Secret Zone route.
  * House UI that merely says a post is sponsored is still an ad script if it

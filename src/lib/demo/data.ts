@@ -31,6 +31,9 @@ export interface DemoComment {
   id: string;
   author: string;
   body: string;
+  parentId?: string;
+  likes?: string[];
+  dislikes?: string[];
 }
 
 export interface DemoPost {
@@ -41,7 +44,12 @@ export interface DemoPost {
   originalId?: string;
   groupSlug?: string;
   likes: string[];
+  dislikes?: string[];
   comments: DemoComment[];
+  /** Hidden originals exist so an ad can be reposted without leaving its slot. */
+  feedVisible?: boolean;
+  sponsored?: boolean;
+  viewedBy?: string[];
   shares: number;
   views: number;
   hoursAgo: number;
@@ -90,7 +98,7 @@ export const PEOPLE: DemoPerson[] = [
     username: "yagyok",
     displayName: "Yagyok",
     email: "yagyok@gmail.com",
-    bio: "Founder of Faddahy Social. Building a text-first home for West Africa and everyone who finds us.",
+    bio: "Founder of D'Luck. Building a text-first home for West Africa and everyone who finds us.",
     region: "nigeria",
     nigerian: true,
     blueTick: true,
@@ -282,7 +290,12 @@ export const GROUPS = [
   },
 ];
 
-const comment = (id: string, author: string, body: string): DemoComment => ({ id, author, body });
+const comment = (
+  id: string,
+  author: string,
+  body: string,
+  extra?: Partial<Pick<DemoComment, "parentId" | "likes" | "dislikes">>,
+): DemoComment => ({ id, author, body, likes: [], dislikes: [], ...extra });
 
 export const POSTS: DemoPost[] = [
   {
@@ -305,16 +318,17 @@ export const POSTS: DemoPost[] = [
     originalId: "p_welcome",
     likes: ["ada", "yagyok", "lena"],
     comments: [
-      comment("q1", "ada", "This is the rule I wish every app wrote down."),
-      comment("q2", "yagyok", "And a Contribute post cannot be quoted again. Go back to the original."),
-      comment("q3", "tunde", "So my distribute above is just a pointer. Got it."),
-      comment("q4", "lena", "Clearer than a quote-tweet, honestly."),
-      comment("q5", "kwame", "The read-only wrapper is the whole idea."),
-      comment("q6", "nora", "Comments still belong to the person who wrote the sentence."),
+      comment("q1", "ada", "This is the rule I wish every app wrote down.", { likes: ["chika", "yagyok", "lena"] }),
+      comment("q1r", "tunde", "That is the line I keep coming back to.", { parentId: "q1", likes: ["ada"] }),
+      comment("q2", "yagyok", "And a Contribute post cannot be quoted again. Go back to the original.", { likes: ["ada"] }),
+      comment("q3", "tunde", "So my distribute above is just a pointer. Got it.", { likes: ["chika", "ada"] }),
+      comment("q4", "lena", "Clearer than a quote-tweet, honestly.", { likes: ["nora"] }),
+      comment("q5", "kwame", "The read-only wrapper is the whole idea.", { dislikes: ["chika"] }),
+      comment("q6", "nora", "Comments still belong to the person who wrote the sentence.", { likes: ["tunde"], dislikes: ["chika"] }),
       comment("q7", "zara", "Sharing the original, not the echo."),
-      comment("q8", "ada", "Unlike also closes the distribution channel. That part is easy to miss."),
+      comment("q8", "ada", "Unlike also closes the distribution channel. That part is easy to miss.", { likes: ["yagyok"] }),
       comment("q9", "chika", "Yes. Interest has to be fresh after you unlike."),
-      comment("q10", "yagyok", "Hourly windows in WAT. Stay online and the channel rolls."),
+      comment("q10", "yagyok", "Hourly windows in WAT. Stay online and the channel rolls.", { likes: ["ada", "chika"] }),
       comment("q11", "lena", "Leaving this here so the tenth reply can sit next to a comment ad."),
     ],
     shares: 2,
@@ -325,7 +339,7 @@ export const POSTS: DemoPost[] = [
     id: "p_welcome",
     author: "yagyok",
     kind: "original",
-    body: "Faddahy Social is text-first on purpose. The main feed will not host video, so we can stay on Vercel and Supabase free tiers. Verification, dating, games, and the Secret Zone live beside the feed — not inside it.",
+    body: "D'Luck is text-first on purpose. The main feed will not host video, so we can stay on Vercel and Supabase free tiers. Verification, dating, games, and the Secret Zone live beside the feed — not inside it.",
     likes: ["ada", "chika", "tunde", "lena"],
     comments: [
       comment("c1", "ada", "Text-only is the right constraint. The writing has to carry the post."),
@@ -373,7 +387,7 @@ export const POSTS: DemoPost[] = [
     id: "p6",
     author: "lena",
     kind: "original",
-    body: "Foreign accounts pay $10 a year, deposit at least $10, and nothing on the menu is priced under $10 even when the home currency is softer. Withdrawals still start at $30, and you cover the conversion fee.",
+    body: "Foreign accounts pay $10 a year, deposit at least $10, and nothing on the menu is priced under $10 even when the home currency is softer. Withdrawals start at $50, and you cover the conversion fee.",
     likes: ["yagyok"],
     comments: [],
     shares: 0,
@@ -395,7 +409,7 @@ export const POSTS: DemoPost[] = [
     id: "p8",
     author: "yagyok",
     kind: "original",
-    body: "Whot and Ludo are the only games. Free tables are open. Paid tables run ₦100 to ₦1,000 in ₦100 steps: 1% to Faddahy, then 30% of the net to the host and 70% to the winner.",
+    body: "Whot and Ludo are the only games. Free tables are open. Paid tables run ₦100 to ₦1,000 in ₦100 steps: 1% to D'Luck, then 30% of the net to the host and 70% to the winner.",
     likes: ["tunde", "kwame", "ada"],
     comments: [],
     shares: 3,
@@ -442,7 +456,7 @@ export const ADS: HouseAd[] = [
     id: "ad_cowry",
     username: "cowrybank",
     name: "Cowry Bank",
-    copy: "Move money without the speech. Cowry is a demo advertiser — your transfer to Faddahy still goes to the founder account.",
+    copy: "Move money without the speech. Cowry is a demo advertiser — your transfer to D'Luck still goes to the founder account.",
     cta: "Open Cowry",
     color: "#0f766e",
     impressions: 8600,
@@ -524,7 +538,7 @@ export const SECRET_CREATORS = [
 
 export const BANK = {
   bank: "GTBank",
-  accountName: "Yagyok Faddahy",
+  accountName: "D'Luck",
   accountNumber: "0123456789",
   narration: "Your @username and the plan (monthly, fast-track, or yearly)",
 };

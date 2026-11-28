@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import {
+  applyMove,
   createLudo,
+  DICE_COLORS,
+  diceForToken,
   legalTokenIndexes,
   LUDO_COLORS,
   LUDO_HOME,
   LUDO_NAMES,
   LUDO_TRACK,
   LUDO_YARD,
-  moveToken,
   nameOf,
   playRoll,
-  rollDice,
-  SAFE_SQUARES,
+  rollTwoDice,
   stepAi,
   tokenCell,
   type LudoState,
@@ -24,31 +25,39 @@ export function LudoBoard() {
   const [mode, setMode] = useState<"ai" | "pass">("ai");
   const [players, setPlayers] = useState<2 | 4>(2);
   const [state, setState] = useState<LudoState>(() => createLudo("ai", 2));
+  const [choice, setChoice] = useState<{ token: number; dice: number[] } | null>(null);
 
   function restart(nextMode: "ai" | "pass", count: 2 | 4) {
     setMode(nextMode);
     setPlayers(count);
+    setChoice(null);
     setState(createLudo(nextMode, count));
   }
 
-  function roll() {
-    setState((current) => {
-      const rolled = playRoll(current, rollDice());
-      if (rolled.mode === "ai" && rolled.turn !== 0 && rolled.winner === null) return stepAi(rolled);
-      return rolled;
-    });
+  function after(next: LudoState): LudoState {
+    if (next.mode === "ai" && next.turn !== 0 && next.winner === null) return stepAi(next);
+    return next;
   }
 
-  function move(index: number) {
-    setState((current) => {
-      const moved = moveToken(current, index);
-      if (moved.mode === "ai" && moved.turn !== 0 && moved.winner === null) return stepAi(moved);
-      return moved;
-    });
+  function roll() {
+    setChoice(null);
+    setState((current) => after(playRoll(current, rollTwoDice())));
+  }
+
+  function move(tokenIndex: number, dieIndex: number) {
+    setChoice(null);
+    setState((current) => after(applyMove(current, tokenIndex, dieIndex)));
+  }
+
+  function onToken(index: number) {
+    const options = diceForToken(state, index);
+    if (options.length === 1) move(index, options[0]);
+    else if (options.length > 1) setChoice({ token: index, dice: options });
   }
 
   const legal = new Set(legalTokenIndexes(state));
   const cells = boardCells(state, legal);
+  const shown = state.shownDice;
 
   return (
     <div data-testid="ludo-board">
@@ -61,43 +70,69 @@ export function LudoBoard() {
         </button>
       </div>
       <p className="mb-3 text-sm text-ink/70">{state.message}</p>
-      <div className="mx-auto grid aspect-square w-full max-w-md grid-cols-[repeat(15,minmax(0,1fr))] gap-px rounded-2xl bg-[#10203a] p-1">
-        {cells.map((cell) => (
-          <div key={cell.key} className="relative" style={{ background: cell.bg }}>
-            {cell.safe && <span className="absolute inset-0.5 rounded-full border border-white/50" />}
-            {cell.tokens.map((token) => (
-              <button
-                key={token.key}
-                type="button"
-                disabled={!token.legal}
-                onClick={() => move(token.index)}
-                className="absolute inset-0.5 rounded-full ring-2 ring-black/40"
-                style={{ background: token.color, outline: token.legal ? "2px solid white" : undefined }}
-                aria-label={`${token.name} token`}
-              />
-            ))}
-          </div>
-        ))}
+      {shown && <p className="mb-2 text-center text-sm font-semibold">Rolled {shown[0]} and {shown[1]}.</p>}
+      <div className="relative mx-auto aspect-square w-full max-w-md">
+        <div className="grid h-full w-full grid-cols-[repeat(15,minmax(0,1fr))] gap-px rounded-2xl bg-[#10203a] p-1">
+          {cells.map((cell) => (
+            <div key={cell.key} className="relative" style={{ background: cell.bg }}>
+              {cell.tokens.map((token) => (
+                <button
+                  key={token.key}
+                  type="button"
+                  disabled={!token.legal}
+                  onClick={() => onToken(token.index)}
+                  className="absolute inset-0.5 rounded-full ring-2 ring-black/40"
+                  style={{ background: token.color, outline: token.legal ? "2px solid white" : undefined }}
+                  aria-label={`${token.name} token`}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div
+          className="pointer-events-none absolute flex items-center justify-center gap-1"
+          style={{ left: "40%", top: "40%", width: "20%", height: "20%" }}
+          data-testid="ludo-dice"
+        >
+          {[0, 1].map((index) => (
+            <span
+              key={index}
+              className="text-2xl font-black leading-none"
+              style={{ color: DICE_COLORS[index] }}
+            >
+              {shown ? shown[index] : "·"}
+            </span>
+          ))}
+        </div>
       </div>
-      <button type="button" className="btn-primary mt-4 w-full" disabled={state.dice !== null || state.winner !== null || (mode === "ai" && state.turn !== 0)} onClick={roll}>
+      {choice && (
+        <div className="mt-3 flex gap-2">
+          {choice.dice.map((dieIndex) => (
+            <button key={dieIndex} type="button" className="btn-primary flex-1 py-2 text-sm" onClick={() => move(choice.token, dieIndex)}>
+              Use {state.dice[dieIndex]}
+            </button>
+          ))}
+        </div>
+      )}
+      <button type="button" className="btn-primary mt-4 w-full" disabled={state.dice.length > 0 || state.winner !== null || (mode === "ai" && state.turn !== 0)} onClick={roll}>
         {state.winner !== null ? `${nameOf(state, state.winner)} wins` : `Roll for ${nameOf(state)}`}
       </button>
       <ul className="mt-3 grid grid-cols-2 gap-2 text-xs text-ink/60">
-        <li>Roll a 6 to leave the yard.</li>
-        <li>Land on a token to capture it, except on safe squares.</li>
-        <li>Need the exact roll down the home stretch.</li>
-        <li>Three sixes in a row forfeits the turn.</li>
+        <li>Two dice. Only a single 6 leaves home.</li>
+        <li>No safe squares on the outer track.</li>
+        <li>A capture sends them home and your seed counts out.</li>
+        <li>Double 6 rolls again. Three in a row forfeits.</li>
       </ul>
     </div>
   );
 }
 
 function boardCells(state: LudoState, legal: Set<number>) {
-  const paint = new Map<string, { bg: string; safe: boolean; tokens: Array<{ key: string; color: string; legal: boolean; index: number; name: string }> }>();
+  const paint = new Map<string, { bg: string; tokens: Array<{ key: string; color: string; legal: boolean; index: number; name: string }> }>();
   const keyOf = (row: number, col: number) => `${row}-${col}`;
   const ensure = (row: number, col: number, bg = "#1a2a49") => {
     const key = keyOf(row, col);
-    if (!paint.has(key)) paint.set(key, { bg, safe: false, tokens: [] });
+    if (!paint.has(key)) paint.set(key, { bg, tokens: [] });
     return paint.get(key)!;
   };
 
@@ -114,16 +149,13 @@ function boardCells(state: LudoState, legal: Set<number>) {
 
   LUDO_TRACK.forEach((point, index) => {
     const cell = ensure(point[0], point[1], "#e8eefc");
-    cell.safe = SAFE_SQUARES.has(index);
     if ([0, 13, 26, 39].includes(index)) {
       const seat = [0, 13, 26, 39].indexOf(index);
       cell.bg = LUDO_COLORS[seat];
     }
   });
   LUDO_HOME.forEach((path, seat) => {
-    path.forEach((point) => {
-      ensure(point[0], point[1], LUDO_COLORS[seat]);
-    });
+    path.forEach((point) => ensure(point[0], point[1], LUDO_COLORS[seat]));
   });
   LUDO_YARD.forEach((spots, seat) => {
     spots.forEach((point) => ensure(point[0], point[1], LUDO_COLORS[seat]));
@@ -133,8 +165,7 @@ function boardCells(state: LudoState, legal: Set<number>) {
     const seat = state.seats[turn];
     tokens.forEach((pos, index) => {
       const [row, col] = tokenCell(seat, pos, index);
-      const cell = ensure(row, col);
-      cell.tokens.push({
+      ensure(row, col).tokens.push({
         key: `${turn}-${index}`,
         color: LUDO_COLORS[seat],
         legal: state.turn === turn && legal.has(index),
@@ -148,7 +179,7 @@ function boardCells(state: LudoState, legal: Set<number>) {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const found = paint.get(keyOf(row, col));
-      cells.push({ key: keyOf(row, col), bg: found?.bg ?? "transparent", safe: found?.safe ?? false, tokens: found?.tokens ?? [] });
+      cells.push({ key: keyOf(row, col), bg: found?.bg ?? "transparent", tokens: found?.tokens ?? [] });
     }
   }
   return cells;

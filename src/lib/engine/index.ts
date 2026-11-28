@@ -4,6 +4,8 @@ export * from "./windows";
 export * from "./allocation";
 export * from "./pricing";
 export * from "./social-rules";
+export * from "./reactions";
+export * from "./comments";
 export * from "./dating";
 export * from "./payouts";
 export * from "./kyc";

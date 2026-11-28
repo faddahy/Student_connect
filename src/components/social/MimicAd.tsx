@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { ADSENSE_CLIENT, ADSENSE_SLOT_FEED } from "@/lib/config";
-import { allowsThirdPartyAds } from "@/lib/engine";
+import { allowsThirdPartyAds, netScore, repostPermissions } from "@/lib/engine";
 import { avatarUri, type HouseAd } from "@/lib/demo/data";
+import { adPostId, contributePost, distributePost, sharePost, togglePostReaction, usePost } from "@/lib/demo/feed-store";
 import { AdSlot } from "@/components/AdSlot";
+import { ActionBar } from "@/components/social/ActionBar";
+import { RepostSheet } from "@/components/social/RepostSheet";
 
-export function MimicAd({ ad, compact = false }: { ad: HouseAd; compact?: boolean }) {
+export function MimicAd({ ad, viewer = "ada", compact = false }: { ad: HouseAd; viewer?: string; compact?: boolean }) {
   const path = usePathname() || "/";
-  const [clicks, setClicks] = useState(ad.clicks);
+  const post = usePost(adPostId(ad.id));
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState<string>();
   const network = allowsThirdPartyAds(path) && Boolean(ADSENSE_CLIENT);
   if (!allowsThirdPartyAds(path)) return null;
+  const likes = post?.likes ?? [];
+  const dislikes = post?.dislikes ?? [];
 
   return (
     <article
@@ -30,14 +37,42 @@ export function MimicAd({ ad, compact = false }: { ad: HouseAd; compact?: boolea
         </div>
       </div>
       <p className={`text-ink/85 ${compact ? "mt-2 text-sm" : "mt-3 text-[15px] leading-relaxed"}`}>{ad.copy}</p>
-      <button
-        type="button"
-        className="mt-3 text-sm font-semibold text-brand-200"
-        onClick={() => setClicks((n) => n + 1)}
-      >
-        {ad.cta} · {clicks.toLocaleString()} clicks
+      <ActionBar
+        views={post?.views ?? ad.impressions}
+        net={netScore(likes.length, dislikes.length)}
+        liked={likes.includes(viewer)}
+        disliked={false}
+        comments={0}
+        shares={post?.shares ?? 0}
+        showViews={false}
+        showDislike={false}
+        showComment={false}
+        showRepost={repostPermissions("original").distribute}
+        onLike={() => togglePostReaction(adPostId(ad.id), viewer, "like")}
+        onShare={() => {
+          sharePost(adPostId(ad.id));
+          const url = `${window.location.origin}/post/${adPostId(ad.id)}`;
+          void navigator.clipboard?.writeText(url);
+          setNote("Shared. The ad stays in this slot.");
+        }}
+        onRepost={() => setOpen(true)}
+      />
+      <button type="button" className="mt-2 text-sm font-semibold text-brand-200">
+        {ad.cta}
       </button>
+      {note && <p className="mt-2 text-xs text-ink/50">{note}</p>}
       {network && !compact && <AdSlot slot={ADSENSE_SLOT_FEED} className="mt-3" />}
+      <RepostSheet
+        open={open}
+        onClose={() => setOpen(false)}
+        onConfirm={(mode, quote) => {
+          const result = mode === "distribute"
+            ? distributePost(viewer, adPostId(ad.id))
+            : contributePost(viewer, adPostId(ad.id), quote);
+          setNote(result.ok ? "Posted. This ad stays where it is in the feed." : result.reason);
+          setOpen(false);
+        }}
+      />
     </article>
   );
 }

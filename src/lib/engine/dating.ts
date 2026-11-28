@@ -21,7 +21,7 @@ export interface PlaceHoldResult {
 }
 
 /**
- * Each blue-tick member places their own ₦100 hold from Faddahy earnings.
+ * Each blue-tick member places their own ₦100 hold from D'Luck earnings.
  * The hold does not deduct. It expires after 48 hours or on unmatch.
  */
 export function placeDateHold(input: {
@@ -42,7 +42,7 @@ export function placeDateHold(input: {
   if (spendable < DATE_FEE_NGN) {
     return {
       ok: false,
-      reason: "You need ₦100 of spendable Faddahy earnings for the 48-hour hold.",
+      reason: "You need ₦100 of spendable D'Luck earnings for the 48-hour hold.",
       earningsAfter: input.earningsNgn,
       heldAfter: input.alreadyHeldNgn,
     };

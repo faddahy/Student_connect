@@ -44,7 +44,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </span>
           )}
           <Link href="/wallet" className="chip px-2 py-1 text-[11px]">Wallet</Link>
-          <Link href="/secret" className="chip px-2 py-1 text-[11px]">18+</Link>
           {admin && <Link href="/admin" className="chip px-2 py-1 text-[11px]">Admin</Link>}
         </div>
       </header>

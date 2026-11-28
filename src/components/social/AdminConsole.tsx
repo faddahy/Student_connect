@@ -11,7 +11,8 @@ import {
   type DemoTransfer,
 } from "@/lib/demo/data";
 import { allocateRevenue, earningEligibility } from "@/lib/engine";
-import { naira } from "@/lib/format";
+import { naira, usd } from "@/lib/format";
+import { setWithdrawalStatus, useAdminInbox } from "@/lib/demo/requests-store";
 
 export function AdminConsole() {
   const [transfers, setTransfers] = useState<DemoTransfer[]>(TRANSFERS);
@@ -75,8 +76,42 @@ export function AdminConsole() {
         )}
       </section>
 
+      <AdminInbox />
       <AdPerformance />
     </main>
+  );
+}
+
+function AdminInbox() {
+  const inbox = useAdminInbox();
+  return (
+    <section className="mt-10" data-testid="admin-inbox">
+      <h2 className="text-lg font-bold">Queries for the founder</h2>
+      <p className="mt-1 text-sm text-ink/55">Withdrawal requests, complaints, and post or comment reports land here for approval.</p>
+      <div className="mt-3 space-y-3">
+        {inbox.withdrawals.length === 0 && inbox.complaints.length === 0 && inbox.reports.length === 0 && (
+          <p className="card text-sm text-ink/50">No open queries.</p>
+        )}
+        {inbox.withdrawals.map((item) => (
+          <article key={item.id} className="card text-sm">
+            <p className="font-bold">@{item.username} requested {item.currency === "USD" ? usd(item.amount) : naira(item.amount)}</p>
+            <p className="text-ink/55">{item.region} · {item.status}</p>
+            {item.status === "pending" && (
+              <div className="mt-2 flex gap-2">
+                <button type="button" className="btn-primary py-2 text-sm" onClick={() => setWithdrawalStatus(item.id, "approved")}>Approve payout</button>
+                <button type="button" className="btn-ghost py-2 text-sm" onClick={() => setWithdrawalStatus(item.id, "rejected")}>Reject</button>
+              </div>
+            )}
+          </article>
+        ))}
+        {inbox.complaints.map((item) => (
+          <article key={item.id} className="card text-sm"><p className="font-bold">Complaint from @{item.username}</p><p className="mt-1 text-ink/70">{item.body}</p></article>
+        ))}
+        {inbox.reports.map((item) => (
+          <article key={item.id} className="card text-sm"><p className="font-bold">Report {item.targetLabel}</p><p className="text-ink/55">@{item.username} · {item.reason}</p></article>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -93,7 +128,7 @@ function AdPerformance() {
   return (
     <section className="mt-10" data-testid="ad-performance">
       <h2 className="text-lg font-bold">Ad performance</h2>
-      <p className="mt-1 text-sm text-ink/55">Mimic advertiser accounts. Spend splits 50% creator / 20% viewer / 30% Faddahy after eligibility.</p>
+      <p className="mt-1 text-sm text-ink/55">Mimic advertiser accounts. Spend splits 50% creator / 20% viewer / 30% {"D'Luck"} after eligibility.</p>
       <div className="mt-3 space-y-3">
         {rows.map(({ ad, split, ctr }) => (
           <article key={ad.id} className="card">
@@ -111,7 +146,7 @@ function AdPerformance() {
               <Stat label="CTR" value={`${ctr.toFixed(2)}%`} />
             </dl>
             <p className="mt-3 text-xs text-ink/50">
-              Spend {naira(ad.spendNgn)} · creators {naira(split.creator)} · viewers {naira(split.viewer)} · Faddahy {naira(split.faddahy)}
+              Spend {naira(ad.spendNgn)} · creators {naira(split.creator)} · viewers {naira(split.viewer)} · {"D'Luck"} {naira(split.faddahy)}
             </p>
           </article>
         ))}
