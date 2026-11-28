@@ -1,4 +1,4 @@
-export const APP_NAME = "Faddahy Social";
+export const APP_NAME = "Plugin9ja";
 export const APP_TAGLINE = "Text-first social for any email. Free to host, verified when it counts.";
 export const SCHOOL_NAME = "Federal University of Technology, Minna";
 export const FOUNDER_USERNAME = "yagyok";

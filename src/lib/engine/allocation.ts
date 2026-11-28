@@ -1,6 +1,6 @@
 import type { PoolEligibility, PoolSplit, ViewerDayLog, ViewerSurface } from "./types";
 
-/** Creator 50%, Viewer 20%, Faddahy 30%. */
+/** Creator 50%, Viewer 20%, Plugin9ja 30%. */
 export const POOL_SHARES = {
   creator: 0.5,
   viewer: 0.2,
@@ -35,8 +35,8 @@ export interface ActivityCounts {
 /**
  * Eligibility is applied before any naira/dollar is assigned.
  * Only verified blue-tick creators and viewers earn from ads.
- * Ineligible shares are withheld (they are not quietly added to Faddahy).
- * Faddahy's 30% is the platform share and is always allocated.
+ * Ineligible shares are withheld (they are not quietly added to Plugin9ja).
+ * Plugin9ja's 30% is the platform share and is always allocated.
  */
 export function allocateRevenue(gross: number, eligibility: PoolEligibility): PoolSplit {
   const amount = roundMoney(Math.max(0, gross));

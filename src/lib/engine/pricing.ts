@@ -14,6 +14,34 @@ export const FOREIGN_MIN_PRICE_USD = 10;
 
 export const WITHDRAWAL_MIN_USD = 30;
 
+/** Live payout floors. Nigerians, other Africans, and everyone else differ. */
+export const WITHDRAWAL_MIN_NGN_NIGERIA = 30_000;
+export const WITHDRAWAL_MIN_NGN_AFRICA = 50_000;
+export const WITHDRAWAL_MIN_USD_FOREIGN = 50;
+
+export function regionalWithdrawalMinimum(region: Region): {
+  amount: number;
+  currency: "NGN" | "USD";
+  label: string;
+} {
+  if (region === "nigeria") {
+    return { amount: WITHDRAWAL_MIN_NGN_NIGERIA, currency: "NGN", label: "₦30,000" };
+  }
+  if (region === "africa") {
+    return { amount: WITHDRAWAL_MIN_NGN_AFRICA, currency: "NGN", label: "₦50,000" };
+  }
+  return { amount: WITHDRAWAL_MIN_USD_FOREIGN, currency: "USD", label: "$50" };
+}
+
+/** A withdrawal is a request to Admin. It is not paid out from the app. */
+export function withdrawalRequestAllowed(region: Region, balance: number): { ok: boolean; reason: string } {
+  const minimum = regionalWithdrawalMinimum(region);
+  if (!(Number.isFinite(balance) && balance >= minimum.amount)) {
+    return { ok: false, reason: `Minimum withdrawal is ${minimum.label}.` };
+  }
+  return { ok: true, reason: "Sent to Admin for approval. Nothing is paid until the founder approves it." };
+}
+
 export interface EarningEligibilityInput {
   region: Region;
   plan: PremiumPlan;

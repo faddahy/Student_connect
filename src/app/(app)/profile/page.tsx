@@ -1,34 +1,41 @@
 import { requireUser } from "@/lib/session";
-import { ProfileEditor } from "@/components/ProfileEditor";
-import { DeleteAccount } from "./DeleteAccount";
-import Link from "next/link";
+import { ProfileView } from "@/components/social/ProfileView";
+import { personByUsername } from "@/lib/demo/data";
+import type { DemoPerson } from "@/lib/demo/data";
+import type { Region } from "@/lib/engine";
 
 export const metadata = { title: "Your profile" };
 
 export default async function ProfilePage() {
-  const { profile } = await requireUser();
+  const session = await requireUser();
+  const { profile } = session;
   if (!profile) return null;
-  return (
-    <main className="px-4">
-      <h1 className="mb-1 text-2xl font-extrabold">Your profile</h1>
-      <p className="text-sm text-ink/50">{profile.username ? `@${profile.username}` : profile.email}</p>
-      <p className="mb-4 text-sm text-ink/50">Following @yagyok</p>
-      <div className="mb-6 flex flex-wrap gap-2 text-sm">
-        <Link href="/verify" className="chip">Blue tick</Link>
-        <Link href="/kyc" className="chip">Identity camera</Link>
-        <Link href="/wallet" className="chip">Wallet</Link>
-        <Link href="/anonymous" className="chip">Anonymous link</Link>
-        <Link href="/secret" className="chip">Secret Zone</Link>
-      </div>
-      <ProfileEditor profile={profile} mode="edit" />
-      <div className="mt-10 space-y-3 border-t border-black/5 pt-6">
-        <form action="/auth/signout" method="post"><button className="btn-ghost w-full">Sign out</button></form>
-        <DeleteAccount />
-        <p className="text-center text-xs text-ink/50">
-          <Link href="/guidelines" className="underline">Guidelines</Link> · <Link href="/terms" className="underline">Terms</Link> ·{" "}
-          <Link href="/privacy" className="underline">Privacy</Link>
-        </p>
-      </div>
-    </main>
-  );
+  const person = session.persona ?? personByUsername(profile.username || "") ?? profileAsPerson(profile);
+  return <ProfileView person={person} viewer={person.username} self profile={profile} />;
+}
+
+function profileAsPerson(profile: NonNullable<Awaited<ReturnType<typeof requireUser>>["profile"]>): DemoPerson {
+  return {
+    id: profile.id,
+    username: profile.username || "you",
+    displayName: profile.display_name || "You",
+    email: profile.email,
+    bio: profile.bio || "",
+    region: (profile.region as Region) || "nigeria",
+    nigerian: profile.region !== "foreign" && profile.region !== "africa",
+    blueTick: Boolean(profile.blue_tick),
+    admin: false,
+    earningsNgn: profile.earnings_ngn ?? 0,
+    plan: (profile.premium_plan as DemoPerson["plan"]) ?? null,
+    straightPremiumMonths: profile.straight_premium_months ?? 0,
+    straightActiveDays: profile.straight_active_days ?? 0,
+    kyc: profile.kyc_status === "approved" || profile.kyc_status === "pending" ? profile.kyc_status : "none",
+    gender: profile.gender || "woman",
+    age: 21,
+    department: profile.department || "Other",
+    level: profile.level || 100,
+    interests: profile.interests,
+    color: "#2563eb",
+    follows: ["yagyok"],
+  };
 }

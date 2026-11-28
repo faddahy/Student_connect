@@ -14,12 +14,16 @@ test("main feed shows distribute, contribute, and a mimic ad", async ({ page }) 
   const contribute = page.getByTestId("contribute-post").first();
   await distribute.scrollIntoViewIfNeeded();
   await expect(distribute).toBeVisible();
-  await expect(contribute.getByRole("button", { name: "Distribute" })).toBeDisabled();
-  await expect(contribute.getByRole("button", { name: "Contribute" })).toBeDisabled();
+  await expect(contribute.getByRole("button", { name: "Repost or quote" })).toHaveCount(0);
+  await expect(contribute.getByRole("button", { name: "Like", exact: true })).toBeVisible();
+  await expect(contribute.getByRole("button", { name: "Dislike", exact: true })).toBeVisible();
   await expect(page.locator("video")).toHaveCount(0);
   await shot(page, "01-feed-distribute-contribute");
-  await contribute.getByRole("button", { name: /Comments/ }).click();
+  await contribute.getByRole("link", { name: "Comment" }).click();
+  await expect(page.getByTestId("comment-thread")).toBeVisible();
   await expect(page.getByTestId("comment-ad").first()).toBeVisible();
+  await shot(page, "02b-comment-thread");
+  await page.goto("/feed");
   await page.getByTestId("mimic-ad").first().scrollIntoViewIfNeeded();
   await expect(page.getByTestId("mimic-ad").first()).toBeVisible();
   await shot(page, "02-feed-mimic-ad");
@@ -40,7 +44,8 @@ test("whot and ludo are playable", async ({ page }) => {
   await page.goto("/games/ludo");
   await expect(page.getByTestId("ludo-board")).toBeVisible();
   await page.getByRole("button", { name: /Roll for/ }).click();
-  await expect(page.getByText(/rolled/i)).toBeVisible();
+  await expect(page.getByTestId("ludo-dice")).toBeVisible();
+  await expect(page.getByText(/rolled/i).first()).toBeVisible();
   await shot(page, "05-ludo");
 });
 
@@ -52,7 +57,7 @@ test("free members see one of every three anonymous notes", async ({ page }) => 
   const open = await page.getByTestId("anon-open").count();
   expect(open).toBe(3);
   expect(locked).toBe(5);
-  await shot(page, "06-anonymous-lock");
+  await shot(page, "06-anonymous-lock", true);
 });
 
 test("secret zone stays free of third-party ad scripts", async ({ page }) => {
@@ -69,6 +74,14 @@ test("secret zone stays free of third-party ad scripts", async ({ page }) => {
   expect(html).not.toMatch(/googlesyndication|adsbygoogle|doubleclick/i);
   expect(scripts.join(" ")).not.toMatch(/googlesyndication|doubleclick/i);
   await shot(page, "07-secret-zone");
+});
+
+test("profile shows posts, counts, and monetization", async ({ page }) => {
+  await page.goto("/profile");
+  await expect(page.getByTestId("profile")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Posts" })).toBeVisible();
+  await expect(page.getByText("Monetization")).toBeVisible();
+  await shot(page, "09-profile", true);
 });
 
 test("admin can review receipts and ad pools", async ({ page }) => {

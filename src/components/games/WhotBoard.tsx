@@ -144,7 +144,13 @@ function SuitMark({ suit, whot }: { suit: WhotSuit; whot?: boolean }) {
   if (whot) return <span className="text-sm font-black text-brand-700">W</span>;
   if (suit === "circle") return <span className={`${common} rounded-full border-[3px] border-red-600`} />;
   if (suit === "triangle") return <span className={common} style={{ clipPath: "polygon(50% 0, 100% 100%, 0 100%)", background: "#16a34a" }} />;
-  if (suit === "cross") return <span className={`${common} relative before:absolute before:inset-x-1 before:inset-y-0 before:bg-amber-500 after:absolute after:inset-x-0 after:inset-y-1 after:bg-amber-500`} />;
+  if (suit === "cross") {
+    return (
+      <svg viewBox="0 0 16 28" className="h-6 w-3" aria-hidden>
+        <path fill="#b45309" d="M6 0h4v6h6v3.2H10V28H6V9.2H0V6h6V0z" />
+      </svg>
+    );
+  }
   if (suit === "square") return <span className={`${common} border-[3px] border-blue-700`} />;
   return <span className={`${common} text-purple-700`}>★</span>;
 }
