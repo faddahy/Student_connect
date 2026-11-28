@@ -98,7 +98,7 @@ export const PEOPLE: DemoPerson[] = [
     username: "yagyok",
     displayName: "Yagyok",
     email: "yagyok@gmail.com",
-    bio: "Founder of D'Luck. Building a text-first home for West Africa and everyone who finds us.",
+    bio: "Founder of Luckey. Building a text-first home for West Africa and everyone who finds us.",
     region: "nigeria",
     nigerian: true,
     blueTick: true,
@@ -339,7 +339,7 @@ export const POSTS: DemoPost[] = [
     id: "p_welcome",
     author: "yagyok",
     kind: "original",
-    body: "D'Luck is text-first on purpose. The main feed will not host video, so we can stay on Vercel and Supabase free tiers. Verification, dating, games, and the Secret Zone live beside the feed — not inside it.",
+    body: "Luckey is text-first on purpose. The main feed will not host video, so we can stay on Vercel and Supabase free tiers. Verification, dating, games, and the Secret Zone live beside the feed — not inside it.",
     likes: ["ada", "chika", "tunde", "lena"],
     comments: [
       comment("c1", "ada", "Text-only is the right constraint. The writing has to carry the post."),
@@ -409,7 +409,7 @@ export const POSTS: DemoPost[] = [
     id: "p8",
     author: "yagyok",
     kind: "original",
-    body: "Whot and Ludo are the only games. Free tables are open. Paid tables run ₦100 to ₦1,000 in ₦100 steps: 1% to D'Luck, then 30% of the net to the host and 70% to the winner.",
+    body: "Whot and Ludo are the only games. Free tables are open. Paid tables run ₦100 to ₦1,000 in ₦100 steps: 1% to Luckey, then 30% of the net to the host and 70% to the winner.",
     likes: ["tunde", "kwame", "ada"],
     comments: [],
     shares: 3,
@@ -456,7 +456,7 @@ export const ADS: HouseAd[] = [
     id: "ad_cowry",
     username: "cowrybank",
     name: "Cowry Bank",
-    copy: "Move money without the speech. Cowry is a demo advertiser — your transfer to D'Luck still goes to the founder account.",
+    copy: "Move money without the speech. Cowry is a demo advertiser — your transfer to Luckey still goes to the founder account.",
     cta: "Open Cowry",
     color: "#0f766e",
     impressions: 8600,
@@ -538,7 +538,7 @@ export const SECRET_CREATORS = [
 
 export const BANK = {
   bank: "GTBank",
-  accountName: "D'Luck",
+  accountName: "Luckey",
   accountNumber: "0123456789",
   narration: "Your @username and the plan (monthly, fast-track, or yearly)",
 };

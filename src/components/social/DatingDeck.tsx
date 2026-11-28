@@ -42,7 +42,7 @@ export function DatingDeck({
           <p className="text-sm font-semibold text-brand-200">Blue tick only</p>
           <h2 className="mt-2 text-xl font-bold">Verify before you can match</h2>
           <p className="mt-2 text-sm leading-relaxed text-ink/70">
-            Dating is limited to blue-tick members. The ₦100 fee comes from {"D'Luck"} earnings and sits in a 48-hour hold until both people confirm.
+            Dating is limited to blue-tick members. The ₦100 fee comes from Luckey earnings and sits in a 48-hour hold until both people confirm.
           </p>
           <Link href="/verify" className="btn-primary mt-5 w-full">Get the blue tick</Link>
         </div>
@@ -87,7 +87,7 @@ export function DatingDeck({
     setEarnings(result.earningsAfter);
     setHeld(result.heldAfter);
     setHold({ withUser: active.withUser, hold: result.hold });
-    setNote(`Match confirmed. ${naira(result.deductedNgn)} was deducted from D'Luck earnings.`);
+    setNote(`Match confirmed. ${naira(result.deductedNgn)} was deducted from Luckey earnings.`);
   }
 
   function unmatch() {

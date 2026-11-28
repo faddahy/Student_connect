@@ -35,7 +35,7 @@ export function stakeLadder(): number[] {
 }
 
 /**
- * Paid play: 1% D'Luck fee on the gross pool.
+ * Paid play: 1% Luckey fee on the gross pool.
  * Of the net, 30% goes to the single tournament host and 70% to the winner
  * (or winning team as one share).
  */
@@ -61,7 +61,7 @@ export interface SecretSplit {
   faddahy: number;
 }
 
-/** ₦1,000 per creator per month, settled 70% creator / 30% D'Luck at month-end. */
+/** ₦1,000 per creator per month, settled 70% creator / 30% Luckey at month-end. */
 export function secretZoneSplit(months = 1): SecretSplit {
   const m = Math.max(1, Math.floor(months));
   const gross = SECRET_SUBSCRIPTION_NGN * m;

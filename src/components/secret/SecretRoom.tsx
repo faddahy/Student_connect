@@ -50,7 +50,7 @@ export function SecretRoom({ focus, blueTick = false, username = "you" }: { focu
       <p className="text-xs font-semibold uppercase tracking-wider text-ink/45">Ad-free · 18+</p>
       <h1 className="mt-1 text-2xl font-extrabold">{focus ? `@${focus}` : "Secret Zone"}</h1>
       <p className="mt-1 text-sm text-ink/55">
-        {naira(split.gross)} / month per creator. Month-end settlement is {naira(split.creator)} to the creator and {naira(split.faddahy)} to {"D'Luck"}.
+        {naira(split.gross)} / month per creator. Month-end settlement is {naira(split.creator)} to the creator and {naira(split.faddahy)} to Luckey.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2">
         <button type="button" className={`chip ${tab === "creator" ? "chip-on" : ""}`} onClick={() => setTab("creator")}>Creator</button>
