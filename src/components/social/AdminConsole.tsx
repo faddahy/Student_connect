@@ -128,7 +128,7 @@ function AdPerformance() {
   return (
     <section className="mt-10" data-testid="ad-performance">
       <h2 className="text-lg font-bold">Ad performance</h2>
-      <p className="mt-1 text-sm text-ink/55">Mimic advertiser accounts. Spend splits 50% creator / 20% viewer / 30% {"D'Luck"} after eligibility.</p>
+      <p className="mt-1 text-sm text-ink/55">Mimic advertiser accounts. Spend splits 50% creator / 20% viewer / 30% Luckey after eligibility.</p>
       <div className="mt-3 space-y-3">
         {rows.map(({ ad, split, ctr }) => (
           <article key={ad.id} className="card">
@@ -146,7 +146,7 @@ function AdPerformance() {
               <Stat label="CTR" value={`${ctr.toFixed(2)}%`} />
             </dl>
             <p className="mt-3 text-xs text-ink/50">
-              Spend {naira(ad.spendNgn)} · creators {naira(split.creator)} · viewers {naira(split.viewer)} · {"D'Luck"} {naira(split.faddahy)}
+              Spend {naira(ad.spendNgn)} · creators {naira(split.creator)} · viewers {naira(split.viewer)} · Luckey {naira(split.faddahy)}
             </p>
           </article>
         ))}

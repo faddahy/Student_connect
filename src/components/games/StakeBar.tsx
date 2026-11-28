@@ -34,7 +34,7 @@ export function StakeBar({ players = 2 }: { players?: number }) {
           <p className="text-sm text-ink/60">{stakeLadder().map((n) => (n === stake ? naira(n) : null)).filter(Boolean)} per player · {players} players</p>
           <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
             <div className="rounded-2xl bg-navy/80 px-3 py-2"><dt className="text-ink/45">Gross pool</dt><dd className="font-bold">{naira(payout.gross)}</dd></div>
-            <div className="rounded-2xl bg-navy/80 px-3 py-2"><dt className="text-ink/45">{"D'Luck"} 1%</dt><dd className="font-bold">{naira(payout.faddahyFee)}</dd></div>
+            <div className="rounded-2xl bg-navy/80 px-3 py-2"><dt className="text-ink/45">Luckey 1%</dt><dd className="font-bold">{naira(payout.faddahyFee)}</dd></div>
             <div className="rounded-2xl bg-navy/80 px-3 py-2"><dt className="text-ink/45">Host 30% of net</dt><dd className="font-bold">{naira(payout.organizer)}</dd></div>
             <div className="rounded-2xl bg-navy/80 px-3 py-2"><dt className="text-ink/45">Winner 70% of net</dt><dd className="font-bold">{naira(payout.winner)}</dd></div>
           </dl>
