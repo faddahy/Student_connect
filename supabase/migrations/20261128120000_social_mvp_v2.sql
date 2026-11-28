@@ -1,5 +1,5 @@
 -- =====================================================================
--- Plugin9ja MVP v2
+-- D'Luck MVP v2
 -- Additive and idempotent. Safe to run in the SQL editor on a database
 -- that already has 20261126120000_faddahy_social.sql.
 -- Does not rename existing tables, columns, or functions.

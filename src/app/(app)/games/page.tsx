@@ -24,7 +24,7 @@ export default function GamesPage() {
       </div>
       <section className="card mt-4 text-sm">
         <h2 className="font-bold">Paid table example · {naira(500)} × 4</h2>
-        <p className="mt-2 text-ink/70">Plugin9ja keeps 1% ({naira(sample.faddahyFee)}). The host takes 30% of the net ({naira(sample.organizer)}). The winner takes 70% ({naira(sample.winner)}).</p>
+        <p className="mt-2 text-ink/70">{"D'Luck"} keeps 1% ({naira(sample.faddahyFee)}). The host takes 30% of the net ({naira(sample.organizer)}). The winner takes 70% ({naira(sample.winner)}).</p>
       </section>
     </main>
   );

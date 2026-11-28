@@ -3,6 +3,7 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/config";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/dluck",
     name: APP_NAME,
     short_name: APP_NAME,
     description: APP_TAGLINE,

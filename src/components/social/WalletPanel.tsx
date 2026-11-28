@@ -23,7 +23,7 @@ export function WalletPanel({ person }: { person: DemoPerson }) {
   return (
     <div className="space-y-3" data-testid="wallet">
       <section className="card">
-        <p className="text-xs font-semibold uppercase tracking-wider text-ink/45">Plugin9ja earnings</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-ink/45">{"D'Luck"} earnings</p>
         <p className="mt-1 text-3xl font-black">{naira(person.earningsNgn)}</p>
         <p className="mt-2 text-sm text-ink/65">{eligibility.reason}</p>
         {eligibility.monthsRemaining !== undefined && <p className="mt-1 text-sm font-semibold">{eligibility.monthsRemaining} premium month(s) left</p>}
@@ -35,7 +35,7 @@ export function WalletPanel({ person }: { person: DemoPerson }) {
         <div className="mt-3 space-y-2 text-sm">
           <Pool label="Creators 50%" value={pools.creator} />
           <Pool label="Viewers 20%" value={pools.viewer} />
-          <Pool label="Plugin9ja 30%" value={pools.faddahy} />
+          <Pool label="D'Luck 30%" value={pools.faddahy} />
           {pools.withheld > 0 && <Pool label="Withheld" value={pools.withheld} />}
         </div>
         <p className="mt-3 text-sm text-ink/60">
